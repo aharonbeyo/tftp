@@ -8,6 +8,11 @@
 #define SERVER_PORT 8080
 #define BUFFER_SIZE 1024
 
+
+void func()
+{
+}
+
 int main()
 {
     int sockfd;
