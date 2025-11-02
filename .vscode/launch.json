@@ -1,0 +1,70 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "tftp Client Debug",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [
+        "127.0.0.1",
+        "test_file.txt",
+        "remote_upload.txt"
+      ],
+      "stopAtEntry": true,
+      "externalConsole": true,
+      "cwd": "/home/aharonb/Projects/gitProjects/tftp",
+      "program": "/home/aharonb/Projects/gitProjects/tftp/tftp_client",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "tftp Server Debug",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [
+        "127.0.0.1",
+        "test_file.txt",
+        "remote_upload.txt"
+      ],
+      "stopAtEntry": true,
+      "externalConsole": true,
+      "cwd": "/home/aharonb/Projects/gitProjects/tftp",
+      "program": "/home/aharonb/Projects/gitProjects/tftp/tftpdServer",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "cwd": "/home/aharonb/Projects/gitProjects/tftp",
+      "program": "/home/aharonb/Projects/gitProjects/tftp/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}
