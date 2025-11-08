@@ -21,15 +21,13 @@
 // --- FUNCTION PROTOTYPES ---
 void send_error(int sockfd, const struct sockaddr_in *cliaddr, socklen_t len, 
                 int code, const char *message);
-void tftp_read_transfer(int sockfd, const struct sockaddr_in *cliaddr, 
-                        socklen_t len, const char *filename);
-void tftp_write_transfer(int sockfd, const struct sockaddr_in *cliaddr, 
-                         socklen_t len, const char *filename);
 void handle_tftp_request(int master_sockfd, const char *buffer, ssize_t n, 
                          const struct sockaddr_in *cliaddr, socklen_t len);
 
-void tftp_write_transfer(int sockfd, const struct sockaddr_in *cliaddr, 
+void tftpWriteTransfer(int sockfd, const struct sockaddr_in *cliaddr, 
                          socklen_t len, const char *filename);
+void tftpReadTransfer(int sockfd, const struct sockaddr_in *cliaddr, 
+                        socklen_t len, const char *filename);
 
 // --- MAIN FUNCTION ---
 int main() {
@@ -136,9 +134,9 @@ void handle_tftp_request(int master_sockfd, const char *buffer, ssize_t n,
 
     // 3. Delegate to the appropriate transfer logic
     if (opcode == OP_RRQ) {
-        tftp_read_transfer(transfer_sockfd, cliaddr, len, filename);
+        tftpReadTransfer(transfer_sockfd, cliaddr, len, filename);
     } else { // Must be OP_WRQ
-        tftp_write_transfer(transfer_sockfd, cliaddr, len, filename);
+        tftpWriteTransfer(transfer_sockfd, cliaddr, len, filename);
     }
 
     // 4. Cleanup and exit the child process
@@ -168,47 +166,3 @@ void send_error(int sockfd, const struct sockaddr_in *cliaddr, socklen_t len,
     }
 }
 
-
-// READ TRANSFER (RRQ): Server sends DATA, waits for ACK
-void tftp_read_transfer(int sockfd, const struct sockaddr_in *cliaddr, 
-                        socklen_t len, const char *filename) {
-    int fd = open(filename, O_RDONLY);
-    if (fd < 0) {
-        if (errno == ENOENT) {
-            send_error(sockfd, cliaddr, len, 1, "File not found");
-        } else {
-            send_error(sockfd, cliaddr, len, 2, "Access violation");
-        }
-        return;
-    }
-    
-    // ** Full Read Transfer Logic (DATA/ACK Loop with Timeouts) goes here **
-    
-    // To send the first DATA packet:
-    /*
-    char data_packet[PACKET_BUF_SIZE];
-    uint16_t block_num = 1;
-    ssize_t bytes_read = read(fd, data_packet + 4, BLOCK_SIZE);
-    
-    // Set headers
-    *(uint16_t *)data_packet = htons(OP_DATA);
-    *(uint16_t *)(data_packet + 2) = htons(block_num);
-    
-    sendto(sockfd, data_packet, 4 + bytes_read, 0, 
-           (const struct sockaddr *)cliaddr, len);
-           
-    // Then set up a loop waiting for ACK 1, send DATA 2, wait for ACK 2, etc.
-    // This loop requires the select()/poll() system call to implement timeouts.
-    */
-    
-    printf("[Child PID %d] Placeholder: File opened, transfer logic required.\n", getpid());
-    close(fd);
-}
-
-// // WRITE TRANSFER (WRQ): Server sends ACK, waits for DATA
-// void tftp_write_transfer(int sockfd, const struct sockaddr_in *cliaddr, 
-//                          socklen_t len, const char *filename) {
-//     // Check for access rights, create file, send ACK 0, and then start the DATA/ACK loop.
-//     printf("[Child PID %d] Placeholder: Write transfer logic required.\n", getpid());
-//     // ** Full Write Transfer Logic (ACK/DATA Loop with Timeouts) goes here **
-// }

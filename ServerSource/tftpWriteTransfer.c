@@ -21,7 +21,7 @@
 #define TIMEOUT_SEC 3  // Timeout in seconds
 #define MAX_RETRIES 5  // Maximum retransmissions
 
-void tftp_write_transfer(int sockfd, const struct sockaddr_in *cliaddr, 
+void tftpWriteTransfer(int sockfd, const struct sockaddr_in *cliaddr, 
                          socklen_t len, const char *filename);
 // --- EXTERNAL HELPER FUNCTION PROTOTYPES ---
 void send_error(int sockfd, const struct sockaddr_in *cliaddr, socklen_t len, int code, const char *message);
@@ -42,7 +42,7 @@ void send_ack(int sockfd, const struct sockaddr_in *cliaddr, socklen_t len, uint
 }
 
 // --- CORE WRITE TRANSFER FUNCTION ---
-void tftp_write_transfer(int sockfd, const struct sockaddr_in *cliaddr, 
+void tftpWriteTransfer(int sockfd, const struct sockaddr_in *cliaddr, 
                          socklen_t len, const char *filename) {
     
     int fd;
