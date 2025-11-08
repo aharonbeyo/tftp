@@ -14,12 +14,17 @@ CLIENT_READ_SOURCE = .//ClientReadSource//*.c
 
 .PHONY: all clean server client run_server run_client
 
+	
 # Default target: builds both server and client
-all: $(SERVER_TARGET) $(CLIENT_WRITE_TARGET) $(CLIENT_READ_TARGET)
+all:  $(SERVER_TARGET) $(CLIENT_WRITE_TARGET) $(CLIENT_READ_TARGET)
 
+SERVER_DIR = ./server
 # Rule to build the Server executable
-$(SERVER_TARGET): $(SERVER_SOURCE)
+$(SERVER_TARGET): $(SERVER_SOURCE)  | $(SERVER_DIR)
 	$(CC) $(CFLAGS) $(SERVER_SOURCE) -o $(SERVER_TARGET)
+
+$(SERVER_DIR):
+	@mkdir -p $(SERVER_DIR)
 
 # Rule to build the Client executable
 $(CLIENT_WRITE_TARGET): $(CLIENT_WRITE_SOURCE)
