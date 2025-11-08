@@ -3,25 +3,31 @@
 # --- Variables ---
 CC = gcc  
 CFLAGS = -g -Wall -Wextra -std=c99
-SERVER_TARGET = tftpdServer
-CLIENT_TARGET = tftp_client
-SERVER_SOURCE = .//Server//tftpdServer.c
-CLIENT_SOURCE = .//Client//tftp_client_wrq.c
+SERVER_TARGET = .//server//tftpdServer
+CLIENT_WRITE_TARGET = .//writeClient//tftp_write_client
+CLIENT_READ_TARGET = .//readClient//tftp_read_client
+SERVER_SOURCE = .//ServerSource//*.c
+CLIENT_WRITE_SOURCE = .//ClientWriteSource//*.c
+CLIENT_READ_SOURCE = .//ClientReadSource//*.c
 
 # --- Targets ---
 
 .PHONY: all clean server client run_server run_client
 
 # Default target: builds both server and client
-all: $(SERVER_TARGET) $(CLIENT_TARGET)
+all: $(SERVER_TARGET) $(CLIENT_WRITE_TARGET) $(CLIENT_READ_TARGET)
 
 # Rule to build the Server executable
 $(SERVER_TARGET): $(SERVER_SOURCE)
 	$(CC) $(CFLAGS) $(SERVER_SOURCE) -o $(SERVER_TARGET)
 
 # Rule to build the Client executable
-$(CLIENT_TARGET): $(CLIENT_SOURCE)
-	$(CC) $(CFLAGS) $(CLIENT_SOURCE) -o $(CLIENT_TARGET)
+$(CLIENT_WRITE_TARGET): $(CLIENT_WRITE_SOURCE)
+	$(CC) $(CFLAGS) $(CLIENT_WRITE_SOURCE) -o $(CLIENT_WRITE_TARGET)
+
+# Rule to build the Client Read executable
+$(CLIENT_READ_TARGET): $(CLIENT_READ_SOURCE)
+	$(CC) $(CFLAGS) $(CLIENT_READ_SOURCE) -o $(CLIENT_READ_TARGET)
 
 # --- Execution Targets ---
 
@@ -33,13 +39,13 @@ run_server: $(SERVER_TARGET)
 
 # Run the Client (Localhost example)
 # NOTE: Requires a file named 'test_file.txt' to exist in the directory.
-run_client: $(CLIENT_TARGET)
+run_client_write: $(CLIENT_WRITE_TARGET)
 	@echo "--- Starting TFTP Client (Sending 'test_file.txt' to 127.0.0.1) ---"
 	# Example usage: <server_ip> <local_file> <remote_filename>
-	./$(CLIENT_TARGET) 127.0.0.1 test_file.txt remote_upload.txt
+	./$(CLIENT_WRITE_TARGET) 127.0.0.1 test_file.txt remote_upload.txt
 
 # --- Cleanup Target ---
 
 clean:
 	@echo "--- Cleaning up project files ---"
-	rm -f $(SERVER_TARGET) $(CLIENT_TARGET)
+	rm -f $(SERVER_TARGET) $(CLIENT_WRITE_TARGET) $(CLIENT_READ_TARGET)
