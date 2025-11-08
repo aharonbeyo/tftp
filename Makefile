@@ -19,6 +19,9 @@ CLIENT_READ_SOURCE = .//ClientReadSource//*.c
 all:  $(SERVER_TARGET) $(CLIENT_WRITE_TARGET) $(CLIENT_READ_TARGET)
 
 SERVER_DIR = ./server
+CLIENT_WRITE_DIR = ./writeClient
+CLIENT_READ_DIR = ./readClient	
+
 # Rule to build the Server executable
 $(SERVER_TARGET): $(SERVER_SOURCE)  | $(SERVER_DIR)
 	$(CC) $(CFLAGS) $(SERVER_SOURCE) -o $(SERVER_TARGET)
@@ -27,12 +30,18 @@ $(SERVER_DIR):
 	@mkdir -p $(SERVER_DIR)
 
 # Rule to build the Client executable
-$(CLIENT_WRITE_TARGET): $(CLIENT_WRITE_SOURCE)
+$(CLIENT_WRITE_TARGET): $(CLIENT_WRITE_SOURCE) | $(CLIENT_WRITE_DIR)
 	$(CC) $(CFLAGS) $(CLIENT_WRITE_SOURCE) -o $(CLIENT_WRITE_TARGET)
 
+$(CLIENT_WRITE_DIR):
+	@mkdir -p $(CLIENT_WRITE_DIR)
+
 # Rule to build the Client Read executable
-$(CLIENT_READ_TARGET): $(CLIENT_READ_SOURCE)
+$(CLIENT_READ_TARGET): $(CLIENT_READ_SOURCE) | $(CLIENT_READ_DIR)
 	$(CC) $(CFLAGS) $(CLIENT_READ_SOURCE) -o $(CLIENT_READ_TARGET)
+
+$(CLIENT_READ_DIR):
+	@mkdir -p $(CLIENT_READ_DIR)
 
 # --- Execution Targets ---
 

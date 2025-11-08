@@ -37,6 +37,47 @@ void send_ack(int sockfd, const struct sockaddr_in *target_addr, socklen_t len, 
     }
 }
 
+int SetupSocket(const char *server_ip, struct sockaddr_in *servaddr)
+{
+    int sockfd;
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    {
+        perror("socket creation failed"); return 1;
+    }
+
+    memset(servaddr, 0, sizeof(struct sockaddr_in));
+    servaddr->sin_family = AF_INET;
+    servaddr->sin_port = htons(SERVER_PORT);
+    if (inet_pton(AF_INET, server_ip, &servaddr->sin_addr) <= 0) {
+        perror("Invalid server IP address"); close(sockfd); return 1;
+    }
+    return sockfd;
+}
+
+int ConstructAndSendRRQ(int sockfd, const struct sockaddr_in *servaddr, const char *filename)
+{
+ // Construct and Send RRQ 
+    char rrq_packet[PACKET_BUF_SIZE];
+    uint16_t *p_op = (uint16_t *)rrq_packet;
+    *p_op = htons(OP_RRQ); 
+    char *p_data = rrq_packet + 2;
+    size_t len_filename = strlen(filename) + 1;
+    size_t len_mode = strlen(MODE) + 1;
+    memcpy(p_data, filename, len_filename);
+    p_data += len_filename;
+    memcpy(p_data, MODE, len_mode);
+    p_data += len_mode;
+    size_t rrq_len = p_data - rrq_packet;
+
+    if (sendto(sockfd, rrq_packet, rrq_len, 0, (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
+        perror("Failed to send RRQ"); close(sockfd); 
+        return -1;
+    }
+    printf("Sent RRQ for file '%s'. Waiting for DATA 1...\n", filename);
+
+    return 0;
+}
+
 // --- MAIN FUNCTION (Complete Implementation) ---
 int main(int argc, char *argv[]) {
     if (argc != 3) {
@@ -47,7 +88,7 @@ int main(int argc, char *argv[]) {
     int sockfd, fd;
     struct sockaddr_in servaddr, remote_transfer_addr;
     socklen_t remote_len = sizeof(remote_transfer_addr);
-    char rrq_packet[PACKET_BUF_SIZE];
+    
     char recv_buffer[PACKET_BUF_SIZE];
     char *server_ip = argv[1];
     char *remote_filename = argv[2];
@@ -55,34 +96,18 @@ int main(int argc, char *argv[]) {
 
     // Create local filename (e.g., just the provided name)
     strncpy(local_filename, remote_filename, 255); 
-    
-    // 1. Socket Setup (as before)
-    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-        perror("socket creation failed"); return 1;
-    }
-    memset(&servaddr, 0, sizeof(servaddr));
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(SERVER_PORT);
-    if (inet_pton(AF_INET, server_ip, &servaddr.sin_addr) <= 0) {
-        perror("Invalid server IP address"); close(sockfd); return 1;
-    }
+    sockfd =SetupSocket(server_ip, &servaddr);
+  
+    if (sockfd < 0) {
+        return -1;
+    }   
 
-    // 2. Construct and Send RRQ (as before)
-    uint16_t *p_op = (uint16_t *)rrq_packet;
-    *p_op = htons(OP_RRQ); 
-    char *p_data = rrq_packet + 2;
-    size_t len_filename = strlen(remote_filename) + 1;
-    size_t len_mode = strlen(MODE) + 1;
-    memcpy(p_data, remote_filename, len_filename);
-    p_data += len_filename;
-    memcpy(p_data, MODE, len_mode);
-    p_data += len_mode;
-    size_t rrq_len = p_data - rrq_packet;
-
-    if (sendto(sockfd, rrq_packet, rrq_len, 0, (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
-        perror("Failed to send RRQ"); close(sockfd); return 1;
-    }
-    printf("Sent RRQ for file '%s'. Waiting for DATA 1...\n", remote_filename);
+    if (ConstructAndSendRRQ(sockfd, &servaddr, remote_filename) < 0) 
+    {
+        close(sockfd);
+        return -2;
+    }   
+   
 
     // --- MAIN TRANSFER LOGIC ---
     uint16_t expected_block = 1;
