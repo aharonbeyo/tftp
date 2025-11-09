@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "tftp Client Debug",
+      "name": "tftp Client Write Debug",
       "type": "cppdbg",
       "request": "launch",
       "args": [
@@ -13,7 +13,29 @@
       "stopAtEntry": true,
       "externalConsole": true,
       "cwd": "/home/aharonb/Projects/gitProjects/tftp",
-      "program": "/home/aharonb/Projects/gitProjects/tftp/tftp_client",
+      "program": "/home/aharonb/Projects/gitProjects/tftp/writeClient/tftp_write_client",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+     {
+      "name": "tftp Client Read Debug",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [
+        "127.0.0.1",
+        "test_file.txt",
+      ],
+      "stopAtEntry": true,
+      "externalConsole": true,
+      "cwd": "/home/aharonb/Projects/gitProjects/tftp",
+      "program": "/home/aharonb/Projects/gitProjects/tftp/readClient/tftp_read_client",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
@@ -28,15 +50,11 @@
       "name": "tftp Server Debug",
       "type": "cppdbg",
       "request": "launch",
-      "args": [
-        "127.0.0.1",
-        "test_file.txt",
-        "remote_upload.txt"
-      ],
+      "args": [],
       "stopAtEntry": true,
       "externalConsole": true,
       "cwd": "/home/aharonb/Projects/gitProjects/tftp",
-      "program": "/home/aharonb/Projects/gitProjects/tftp/tftpdServer",
+      "program": "/home/aharonb/Projects/gitProjects/tftp/server/tftpdServer",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
