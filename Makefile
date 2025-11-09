@@ -55,8 +55,15 @@ run_server: $(SERVER_TARGET)
 # NOTE: Requires a file named 'test_file.txt' to exist in the directory.
 run_client_write: $(CLIENT_WRITE_TARGET)
 	@echo "--- Starting TFTP Client (Sending 'test_file.txt' to 127.0.0.1) ---"
+	@rm -f server//remote_upload.txt
 	# Example usage: <server_ip> <local_file> <remote_filename>
 	./$(CLIENT_WRITE_TARGET) 127.0.0.1 test_file.txt remote_upload.txt
+
+
+run_client_read: $(CLIENT_READ_TARGET)
+	@echo "--- Starting TFTP Client (Receiving 'remote_download.txt' from 127.0.0.1) ---"
+	@rm -f client//test_file.txt
+	./$(CLIENT_READ_TARGET) 127.0.0.1 test_file.txt
 
 # --- Cleanup Target ---
 
